@@ -18,7 +18,22 @@ const createUser = catchAsync(
     });
   }
 );
+const updateUser = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.id;
+    const VerifiedToken = req.user;
 
+    const payload = req.body;
+
+    const user = await UserServices.updateUser(userId, payload, VerifiedToken);
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.CREATED,
+      message: "User Updated successfully",
+      data: user,
+    });
+  }
+);
 const getAllUsers = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const result = await UserServices.getAllUsers();
@@ -34,4 +49,5 @@ const getAllUsers = catchAsync(
 export const UserControllers = {
   createUser,
   getAllUsers,
+  updateUser,
 };

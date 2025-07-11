@@ -10,3 +10,8 @@ export const generateToken = (
   } as SignOptions);
   return token;
 };
+
+export const verifyToken = (token: string, secret: string) => {
+  const verifiedToken = jwt.verify(token, secret);
+  return verifiedToken;
+};
