@@ -8,5 +8,10 @@ router.post(
 
   AuthControllers.credentialsLogin
 );
+router.post(
+  "/refresh-token",
+
+  AuthControllers.getNewAccessToken
+);
 
 export const authRoutes = router;
