@@ -12,4 +12,7 @@ const createDivision = async (payload: Partial<IDivision>) => {
   return result;
 };
 
-export const divistionService = { createDivision };
+const getAllDivision = async () => {
+  return await Division.find({});
+};
+export const divistionService = { createDivision, getAllDivision };

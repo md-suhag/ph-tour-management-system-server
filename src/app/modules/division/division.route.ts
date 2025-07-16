@@ -13,5 +13,6 @@ router.post(
   validateRequest(createDivisionZodSchema),
   divisionController.createDivision
 );
+router.get("/", divisionController.getAllDivision);
 
 export const divisionRoutes = router;
