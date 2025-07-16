@@ -15,4 +15,17 @@ const createDivision = async (payload: Partial<IDivision>) => {
 const getAllDivision = async () => {
   return await Division.find({});
 };
-export const divistionService = { createDivision, getAllDivision };
+
+const updateDivision = async (id: string, payload: IDivision) => {
+  const updatedData = await Division.findByIdAndUpdate(id, payload, {
+    runValidators: true,
+    new: true,
+  });
+
+  return updatedData;
+};
+export const divistionService = {
+  createDivision,
+  getAllDivision,
+  updateDivision,
+};

@@ -29,7 +29,24 @@ const getAllDivision = catchAsync(
     });
   }
 );
+
+const updateDivision = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params.id;
+
+    const result = await divistionService.updateDivision(id, req.body);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Division Updated successfully",
+      data: result,
+    });
+  }
+);
+
 export const divisionController = {
   createDivision,
   getAllDivision,
+  updateDivision,
 };
