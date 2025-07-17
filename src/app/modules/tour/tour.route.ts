@@ -37,5 +37,6 @@ router.post(
   validateRequest(createTourZodSchema),
   tourController.createTour
 );
+router.get("/", tourController.getAllTour);
 
 export const tourRoutes = router;
