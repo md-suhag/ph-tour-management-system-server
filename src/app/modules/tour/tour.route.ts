@@ -5,6 +5,7 @@ import {
   createTourtypeZodSchema,
   createTourZodSchema,
   updateTourtypeZodSchema,
+  updateTourZodSchema,
 } from "./tour.validation";
 import { checkAuth } from "../../middlewares/checkAuth";
 import { Role } from "../user/user.interface";
@@ -38,5 +39,11 @@ router.post(
   tourController.createTour
 );
 router.get("/", tourController.getAllTour);
+router.patch(
+  "/:id",
+  checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+  validateRequest(updateTourZodSchema),
+  tourController.updateTour
+);
 
 export const tourRoutes = router;

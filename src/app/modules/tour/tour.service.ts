@@ -50,6 +50,13 @@ const createTour = async (payload: ITour) => {
 const getAllTour = async () => {
   return await Tour.find({});
 };
+
+const updateTour = async (id: string, payload: ITour) => {
+  return await Tour.findByIdAndUpdate(id, payload, {
+    runValidators: true,
+    new: true,
+  });
+};
 export const tourService = {
   createTourType,
   getAllTourTypes,
@@ -57,4 +64,5 @@ export const tourService = {
   deleteTourType,
   createTour,
   getAllTour,
+  updateTour,
 };

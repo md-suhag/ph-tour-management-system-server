@@ -82,6 +82,19 @@ const getAllTour = catchAsync(
     });
   }
 );
+
+const updateTour = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const updatedData = await tourService.updateTour(req.params.id, req.body);
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Tour updated successfully",
+      data: updatedData,
+    });
+  }
+);
+
 export const tourController = {
   createTourType,
   getAllTourTypes,
@@ -89,4 +102,5 @@ export const tourController = {
   deleteTourType,
   createTour,
   getAllTour,
+  updateTour,
 };
