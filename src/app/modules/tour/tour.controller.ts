@@ -95,6 +95,17 @@ const updateTour = catchAsync(
   }
 );
 
+const deleteTour = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await tourService.deleteTour(req.params.id);
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Tour  deleted successfully",
+      data: result,
+    });
+  }
+);
 export const tourController = {
   createTourType,
   getAllTourTypes,
@@ -103,4 +114,5 @@ export const tourController = {
   createTour,
   getAllTour,
   updateTour,
+  deleteTour,
 };
