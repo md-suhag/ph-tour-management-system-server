@@ -1,5 +1,6 @@
 import { model, Schema } from "mongoose";
 import { ITour, ITourType } from "./tour.interface";
+import { createSlug } from "../../utils/createSlug";
 
 const tourTypeSchema = new Schema<ITourType>(
   {
@@ -15,7 +16,7 @@ export const TourType = model<ITourType>("TourType", tourTypeSchema);
 const tourSchema = new Schema<ITour>(
   {
     title: { type: String, required: true },
-    slug: { type: String, required: true, unique: true },
+    slug: { type: String, unique: true },
     description: { type: String },
     images: { type: [String], default: [] },
     location: { type: String },
@@ -43,5 +44,19 @@ const tourSchema = new Schema<ITour>(
     timestamps: true,
   }
 );
+
+tourSchema.pre("save", async function (next) {
+  const baseSlug = createSlug(this.title);
+
+  let uniqueSlug = baseSlug;
+  let counter = 1;
+
+  while (await Tour.exists({ slug: uniqueSlug })) {
+    uniqueSlug = `${baseSlug}-${counter++}`;
+  }
+  this.slug = uniqueSlug;
+
+  next();
+});
 
 export const Tour = model<ITour>("Tour", tourSchema);

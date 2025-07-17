@@ -1,8 +1,9 @@
 import { StatusCodes } from "http-status-codes";
 import AppError from "../../errorHelpers/AppError";
 import { Tour, TourType } from "./tour.model";
+import { ITour, ITourType } from "./tour.interface";
 
-const createTourType = async (payload: string) => {
+const createTourType = async (payload: ITourType) => {
   return await TourType.create({
     name: payload,
   });
@@ -38,9 +39,17 @@ const deleteTourType = async (id: string) => {
   }
   return result;
 };
+
+const createTour = async (payload: ITour) => {
+  const newTour = new Tour(payload);
+
+  await newTour.save();
+  return newTour;
+};
 export const tourService = {
   createTourType,
   getAllTourTypes,
   updateTourType,
   deleteTourType,
+  createTour,
 };

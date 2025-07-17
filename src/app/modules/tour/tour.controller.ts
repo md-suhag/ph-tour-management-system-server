@@ -57,9 +57,22 @@ const deleteTourType = catchAsync(
     });
   }
 );
+
+const createTour = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await tourService.createTour(req.body);
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.CREATED,
+      message: "Tour created successfully",
+      data: result,
+    });
+  }
+);
 export const tourController = {
   createTourType,
   getAllTourTypes,
   updateTourType,
   deleteTourType,
+  createTour,
 };
