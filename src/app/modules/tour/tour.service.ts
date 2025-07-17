@@ -10,7 +10,19 @@ const getAllTourTypes = async () => {
   return await TourType.find({});
 };
 
+const updateTourType = async (id: string, payload: string) => {
+  return await TourType.findByIdAndUpdate(
+    id,
+    { name: payload },
+    {
+      runValidators: true,
+      new: true,
+    }
+  );
+};
+
 export const tourService = {
   createTourType,
   getAllTourTypes,
+  updateTourType,
 };

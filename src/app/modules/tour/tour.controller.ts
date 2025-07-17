@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import { tourService } from "./tour.service";
@@ -29,7 +30,23 @@ const getAllTourTypes = catchAsync(
     });
   }
 );
+
+const updateTourType = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const updatedData = await tourService.updateTourType(
+      req.params.id,
+      req.body.name
+    );
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Tour Type updated successfully",
+      data: updatedData,
+    });
+  }
+);
 export const tourController = {
   createTourType,
   getAllTourTypes,
+  updateTourType,
 };
