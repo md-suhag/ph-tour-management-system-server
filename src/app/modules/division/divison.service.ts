@@ -16,9 +16,24 @@ const createDivision = async (payload: Partial<IDivision>) => {
 };
 
 const getAllDivision = async () => {
-  return await Division.find({});
+  const divisions = await Division.find({});
+
+  const totalDivisions = await Division.countDocuments();
+
+  return {
+    data: divisions,
+    meta: {
+      total: totalDivisions,
+    },
+  };
 };
 
+const getSingleDivision = async (slug: string) => {
+  const division = await Division.findOne({ slug });
+  return {
+    data: division,
+  };
+};
 const updateDivision = async (id: string, payload: IDivision) => {
   const updatedData = await Division.findByIdAndUpdate(id, payload, {
     runValidators: true,
@@ -48,4 +63,5 @@ export const divistionService = {
   getAllDivision,
   updateDivision,
   deleteDivision,
+  getSingleDivision,
 };
