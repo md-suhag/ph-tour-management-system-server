@@ -2,6 +2,8 @@ import { StatusCodes } from "http-status-codes";
 import AppError from "../../errorHelpers/AppError";
 import { Tour, TourType } from "./tour.model";
 import { ITour, ITourType } from "./tour.interface";
+import { QueryBuilder } from "../../utils/QueryBuilder";
+import { tourSearchableFields } from "./tour.constant";
 
 const createTourType = async (payload: ITourType) => {
   return await TourType.create({
@@ -47,8 +49,24 @@ const createTour = async (payload: ITour) => {
   return newTour;
 };
 
-const getAllTour = async () => {
-  return await Tour.find({});
+const getAllTour = async (query: Record<string, string>) => {
+  const queryBuilder = new QueryBuilder(Tour.find(), query);
+
+  const tours = await queryBuilder
+    .search(tourSearchableFields)
+    .filter()
+    .sort()
+    .fields()
+    .paginate();
+
+  const [data, meta] = await Promise.all([
+    tours.build(),
+    queryBuilder.getMeta(),
+  ]);
+  return {
+    data,
+    meta,
+  };
 };
 
 const updateTour = async (id: string, payload: ITour) => {
