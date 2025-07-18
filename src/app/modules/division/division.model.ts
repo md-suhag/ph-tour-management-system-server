@@ -29,26 +29,21 @@ divisionSchema.pre("save", async function (next) {
 });
 
 divisionSchema.pre("findOneAndUpdate", async function (next) {
-  const update = this.getUpdate();
-  if (Array.isArray(update)) return next();
-  const name = update?.name || update?.$set?.name;
-  if (!name) return next();
+  const division = this.getUpdate() as Partial<IDivision>;
 
-  const baseSlug = createSlug(name);
+  if (division.name) {
+    const baseSlug = createSlug(division.name);
 
-  let uniqueSlug = baseSlug;
-  let counter = 1;
+    let uniqueSlug = baseSlug;
+    let counter = 1;
 
-  while (await this.model.findOne({ slug: uniqueSlug })) {
-    uniqueSlug = `${baseSlug}-${counter++}`;
+    while (await this.model.findOne({ slug: uniqueSlug })) {
+      uniqueSlug = `${baseSlug}-${counter++}`;
+    }
+    division.slug = uniqueSlug;
   }
 
-  // Update the slug in the query update object
-  if (update?.$set) {
-    update.$set.slug = uniqueSlug;
-  } else {
-    update.slug = uniqueSlug;
-  }
+  this.setUpdate(division);
 
   next();
 });
