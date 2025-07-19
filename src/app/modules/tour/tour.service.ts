@@ -3,7 +3,10 @@ import AppError from "../../errorHelpers/AppError";
 import { Tour, TourType } from "./tour.model";
 import { ITour, ITourType } from "./tour.interface";
 import { QueryBuilder } from "../../utils/QueryBuilder";
-import { tourSearchableFields } from "./tour.constant";
+import {
+  tourSearchableFields,
+  tourTypeSearchableFields,
+} from "./tour.constant";
 
 const createTourType = async (payload: ITourType) => {
   return await TourType.create({
@@ -11,10 +14,33 @@ const createTourType = async (payload: ITourType) => {
   });
 };
 
-const getAllTourTypes = async () => {
-  return await TourType.find({});
+const getAllTourTypes = async (query: Record<string, string>) => {
+  const queryBuilder = new QueryBuilder(TourType.find(), query);
+
+  const tourTypes = await queryBuilder
+    .search(tourTypeSearchableFields)
+    .filter()
+    .sort()
+    .fields()
+    .paginate();
+
+  const [data, meta] = await Promise.all([
+    tourTypes.build(),
+    queryBuilder.getMeta(),
+  ]);
+
+  return {
+    data,
+    meta,
+  };
 };
 
+const getSingleTourType = async (id: string) => {
+  const tourType = await TourType.findById(id);
+  return {
+    data: tourType,
+  };
+};
 const updateTourType = async (id: string, payload: string) => {
   return await TourType.findByIdAndUpdate(
     id,
@@ -47,6 +73,12 @@ const createTour = async (payload: ITour) => {
 
   await newTour.save();
   return newTour;
+};
+const getSingleTour = async (slug: string) => {
+  const tour = await Tour.findOne({ slug });
+  return {
+    data: tour,
+  };
 };
 
 const getAllTour = async (query: Record<string, string>) => {
@@ -86,9 +118,11 @@ const deleteTour = async (id: string) => {
 export const tourService = {
   createTourType,
   getAllTourTypes,
+  getSingleTourType,
   updateTourType,
   deleteTourType,
   createTour,
+  getSingleTour,
   getAllTour,
   updateTour,
   deleteTour,
