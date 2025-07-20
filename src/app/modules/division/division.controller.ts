@@ -8,7 +8,7 @@ import { StatusCodes } from "http-status-codes";
 const createDivision = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const createdDivision = await divistionService.createDivision(req.body);
-    console.log(createDivision);
+
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.OK,
@@ -20,13 +20,30 @@ const createDivision = catchAsync(
 
 const getAllDivision = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await divistionService.getAllDivision();
+    const query = req.query;
+    const result = await divistionService.getAllDivision(
+      query as Record<string, string>
+    );
 
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.OK,
       message: "All division retrieved successfully",
-      data: result,
+      data: result.data,
+      meta: result.meta,
+    });
+  }
+);
+
+const getSingleDivision = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await divistionService.getSingleDivision(req.params.slug);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Divisions retrieved",
+      data: result.data,
     });
   }
 );
@@ -62,6 +79,7 @@ const deleteDivision = catchAsync(
 export const divisionController = {
   createDivision,
   getAllDivision,
+  getSingleDivision,
   updateDivision,
   deleteDivision,
 };

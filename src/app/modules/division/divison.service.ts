@@ -3,6 +3,8 @@ import AppError from "../../errorHelpers/AppError";
 import { IDivision } from "./division.interface";
 import { Division } from "./division.model";
 import { Tour } from "../tour/tour.model";
+import { QueryBuilder } from "../../utils/QueryBuilder";
+import { divisionSearchableFields } from "./division.constant";
 
 const createDivision = async (payload: Partial<IDivision>) => {
   const result = new Division({
@@ -15,10 +17,33 @@ const createDivision = async (payload: Partial<IDivision>) => {
   return result;
 };
 
-const getAllDivision = async () => {
-  return await Division.find({});
+const getAllDivision = async (query: Record<string, string>) => {
+  const queryBuilder = new QueryBuilder(Division.find(), query);
+
+  const divisionsData = queryBuilder
+    .search(divisionSearchableFields)
+    .filter()
+    .sort()
+    .fields()
+    .paginate();
+
+  const [data, meta] = await Promise.all([
+    divisionsData.build(),
+    queryBuilder.getMeta(),
+  ]);
+
+  return {
+    data,
+    meta,
+  };
 };
 
+const getSingleDivision = async (slug: string) => {
+  const division = await Division.findOne({ slug });
+  return {
+    data: division,
+  };
+};
 const updateDivision = async (id: string, payload: IDivision) => {
   const updatedData = await Division.findByIdAndUpdate(id, payload, {
     runValidators: true,
@@ -48,4 +73,5 @@ export const divistionService = {
   getAllDivision,
   updateDivision,
   deleteDivision,
+  getSingleDivision,
 };
