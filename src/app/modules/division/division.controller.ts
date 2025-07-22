@@ -11,7 +11,7 @@ const createDivision = catchAsync(
 
     sendResponse(res, {
       success: true,
-      statusCode: StatusCodes.OK,
+      statusCode: StatusCodes.CREATED,
       message: "Division created successfully",
       data: createdDivision,
     });
@@ -40,7 +40,7 @@ const getSingleDivision = catchAsync(
     const result = await divistionService.getSingleDivision(req.params.slug);
 
     sendResponse(res, {
-      statusCode: 200,
+      statusCode: StatusCodes.OK,
       success: true,
       message: "Divisions retrieved",
       data: result.data,

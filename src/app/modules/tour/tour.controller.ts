@@ -11,7 +11,7 @@ const createTourType = catchAsync(
 
     sendResponse(res, {
       success: true,
-      statusCode: StatusCodes.OK,
+      statusCode: StatusCodes.CREATED,
       message: "Tour Type created successfully",
       data: result,
     });
@@ -21,7 +21,7 @@ const getSingleTourType = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
   const result = await tourService.getSingleTourType(id);
   sendResponse(res, {
-    statusCode: 200,
+    statusCode: StatusCodes.OK,
     success: true,
     message: "Tour type retrieved successfully",
     data: result,
@@ -87,7 +87,7 @@ const getSingleTour = catchAsync(async (req: Request, res: Response) => {
   const slug = req.params.slug;
   const result = await tourService.getSingleTour(slug);
   sendResponse(res, {
-    statusCode: 200,
+    statusCode: StatusCodes.OK,
     success: true,
     message: "Tour retrieved successfully",
     data: result,
