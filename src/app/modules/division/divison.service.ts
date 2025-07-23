@@ -5,16 +5,17 @@ import { Division } from "./division.model";
 import { Tour } from "../tour/tour.model";
 import { QueryBuilder } from "../../utils/QueryBuilder";
 import { divisionSearchableFields } from "./division.constant";
+import { deleteImageFromCloudinary } from "../../config/cloudinary.config";
 
 const createDivision = async (payload: Partial<IDivision>) => {
-  const result = new Division({
-    name: payload.name,
-    thumbnail: payload.thumbnail,
-    description: payload.description,
-  });
-  await result.save();
+  const existingDivision = await Division.findOne({ name: payload.name });
+  if (existingDivision) {
+    throw new Error("A division with this name already exists.");
+  }
 
-  return result;
+  const division = await Division.create(payload);
+
+  return division;
 };
 
 const getAllDivision = async (query: Record<string, string>) => {
@@ -45,12 +46,29 @@ const getSingleDivision = async (slug: string) => {
   };
 };
 const updateDivision = async (id: string, payload: IDivision) => {
-  const updatedData = await Division.findByIdAndUpdate(id, payload, {
-    runValidators: true,
-    new: true,
+  const existingDivision = await Division.findById(id);
+  if (!existingDivision) {
+    throw new Error("Division not found.");
+  }
+
+  const duplicateDivision = await Division.findOne({
+    name: payload.name,
+    _id: { $ne: id },
   });
 
-  return updatedData;
+  if (duplicateDivision) {
+    throw new Error("A division with this name already exists.");
+  }
+
+  const updatedDivision = await Division.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (payload.thumbnail && existingDivision.thumbnail) {
+    await deleteImageFromCloudinary(existingDivision.thumbnail);
+  }
+  return updatedDivision;
 };
 
 const deleteDivision = async (id: string) => {
