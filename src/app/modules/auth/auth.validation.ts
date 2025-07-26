@@ -15,3 +15,14 @@ export const setPasswordZodSchema = z.object({
     })
     .optional(),
 });
+
+export const forgotPasswordZodSchema = z.object({
+  email: z
+    .string({ invalid_type_error: "Email must be string" })
+    .email({ message: "Invalid email address format." }),
+});
+
+export const resetPasswordZodSchema = z.object({
+  id: z.string(),
+  newPassword: z.string(),
+});

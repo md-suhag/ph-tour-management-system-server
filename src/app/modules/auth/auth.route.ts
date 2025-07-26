@@ -4,7 +4,11 @@ import { checkAuth } from "../../middlewares/checkAuth";
 import { Role } from "../user/user.interface";
 import passport from "passport";
 import { validateRequest } from "../../middlewares/validateRequest";
-import { setPasswordZodSchema } from "./auth.validation";
+import {
+  forgotPasswordZodSchema,
+  resetPasswordZodSchema,
+  setPasswordZodSchema,
+} from "./auth.validation";
 import { envVars } from "../../config/env";
 
 const router = Router();
@@ -24,8 +28,14 @@ router.post(
   AuthControllers.changePassword
 );
 router.post(
+  "/forgot-password",
+  validateRequest(forgotPasswordZodSchema),
+  AuthControllers.forgotPassword
+);
+router.post(
   "/reset-password",
   checkAuth(...Object.values(Role)),
+  validateRequest(resetPasswordZodSchema),
   AuthControllers.resetPassword
 );
 router.get(

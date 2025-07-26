@@ -98,9 +98,33 @@ const changePassword = catchAsync(
     });
   }
 );
+
+const forgotPassword = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { email } = req.body;
+
+    await AuthServices.forgotPassword(email);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Email Sent Successfully",
+      data: null,
+    });
+  }
+);
 const resetPassword = catchAsync(
   async (req: Request, res: Response, nex: NextFunction) => {
-    AuthServices.resetPassword();
+    const decodedToken = req.user;
+
+    await AuthServices.resetPassword(req.body, decodedToken as JwtPayload);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Password Changed Successfully",
+      data: null,
+    });
   }
 );
 
@@ -141,6 +165,7 @@ export const AuthControllers = {
   credentialsLogin,
   getNewAccessToken,
   logout,
+  forgotPassword,
   resetPassword,
   changePassword,
   setPassword,
