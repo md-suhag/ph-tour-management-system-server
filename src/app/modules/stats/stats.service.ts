@@ -1,3 +1,5 @@
+import { Booking } from "../booking/booking.model";
+import { Tour } from "../tour/tour.model";
 import { IsActive } from "../user/user.interface";
 import { User } from "../user/user.model";
 
@@ -62,7 +64,129 @@ const getUserStats = async () => {
     usersByRole,
   };
 };
-const getTourStats = async () => {};
+const getTourStats = async () => {
+  const totalTourPromise = Tour.countDocuments();
+
+  const totalTourByTourTypePromise = Tour.aggregate([
+    // stage-1 : connect Tour Type model - lookup stage
+    {
+      $lookup: {
+        from: "tourtypes",
+        localField: "tourType",
+        foreignField: "_id",
+        as: "type",
+      },
+    },
+    //stage - 2 : unwind the array to object
+    {
+      $unwind: {
+        path: "$type",
+      },
+    },
+    //stage - 3 : grouping tour type
+    {
+      $group: {
+        _id: "$type.name",
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  const avgTourCostPromise = Tour.aggregate([
+    {
+      $group: {
+        _id: null,
+        avgCostFrom: { $avg: "$costFrom" },
+      },
+    },
+  ]);
+
+  const totalTourByDivisionPromise = Tour.aggregate([
+    {
+      $lookup: {
+        from: "divisions",
+        localField: "division",
+        foreignField: "_id",
+        as: "division",
+      },
+    },
+
+    {
+      $unwind: "$division",
+    },
+
+    {
+      $group: {
+        _id: "$division.name",
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  const totalHighestBookedTourPromise = Booking.aggregate([
+    {
+      $group: {
+        _id: "$tour",
+        bookingCount: { $sum: 1 },
+      },
+    },
+
+    {
+      $sort: { bookingCount: -1 },
+    },
+
+    {
+      $limit: 5,
+    },
+
+    {
+      $lookup: {
+        from: "tours",
+        let: { tourId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ["$_id", "$$tourId"] },
+            },
+          },
+        ],
+        as: "tour",
+      },
+    },
+
+    { $unwind: "$tour" },
+
+    {
+      $project: {
+        bookingCount: 1,
+        "tour.title": 1,
+        "tour.slug": 1,
+      },
+    },
+  ]);
+
+  const [
+    totalTour,
+    totalTourByTourType,
+    avgTourCost,
+    totalTourByDivision,
+    totalHighestBookedTour,
+  ] = await Promise.all([
+    totalTourPromise,
+    totalTourByTourTypePromise,
+    avgTourCostPromise,
+    totalTourByDivisionPromise,
+    totalHighestBookedTourPromise,
+  ]);
+
+  return {
+    totalTour,
+    totalTourByTourType,
+    avgTourCost,
+    totalTourByDivision,
+    totalHighestBookedTour,
+  };
+};
 const getBookingStats = async () => {};
 const getPaymentStats = async () => {};
 
