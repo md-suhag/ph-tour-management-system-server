@@ -1,7 +1,7 @@
 import z from "zod";
 
 export const sendOTPZodSchema = z.object({
-  name: z.string(),
+  // name: z.string(),
   email: z.string().email(),
 });
 

@@ -5,8 +5,8 @@ import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
 
 const sendOTP = catchAsync(async (req: Request, res: Response) => {
-  const { email, name } = req.body;
-  await OTPService.sendOTP(email, name);
+  const { email } = req.body;
+  await OTPService.sendOTP(email);
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
